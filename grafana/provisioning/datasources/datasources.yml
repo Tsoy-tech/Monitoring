@@ -1,0 +1,31 @@
+apiVersion: 1
+
+# datasources:
+ # - name: InfluxDB_v2_InfluxQL
+   # type: influxdb
+   # access: proxy
+   # url: http://influxdb:8086
+   # isDefault: true
+   # database: influxDB_bucket
+   # editable: true
+   # jsonData:
+     # httpMode: GET
+     # httpHeaderName1: 'Authorization'
+   # secureJsonData:
+     # httpHeaderValue1: 'Token token228datoist'
+#########FLUX##############################
+datasources:
+ - name: InfluxDB_v2_Flux
+   type: influxdb
+   access: proxy
+   url: http://influxdb:8086
+   isDefault: true
+   secureJsonData:
+     token: token228datoist
+   jsonData:
+     version: Flux
+     organization: PerformanceLab
+     defaultBucket: influxDB_bucket
+     tlsSkipVerify: true
+   editable: true
+

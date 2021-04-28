@@ -1,0 +1,45 @@
+version: "2.0"
+services:
+  influxdb:
+    image: influxdb:${INF_TAG}
+    container_name: influxdb
+    restart: always
+    ports:
+      - 8086:8086
+    networks:
+      - monitoring
+    volumes:
+      - influxdb-volume:/monitoring/influxdb
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INF_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INF_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INF_ORGANIZATION}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INF_BUCKET}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INF_ADMIN_TOKEN}
+  grafana:
+    image: grafana/grafana:${G_TAG}
+    container_name: grafana
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - monitoring
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources/
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards/
+      #- grafana-volume:/monitoring
+      #- ./grafana:/etc/grafana/provisioning/
+      #- grafana/provisioning/datasources:grafana/provisioning/datasources
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SECURITY_ADMIN_USER=${G_USERNAME}
+      - GF_SECURITY_ADMIN_PASSWORD=${G_PASSWORD}
+      #- GF_AUTH_ANONYMOUS_ENABLED=true
+      #- GF_AUTH_BASIC_ENABLED=false
+networks:
+  monitoring:
+volumes:
+  grafana-volume:
+  influxdb-volume:
