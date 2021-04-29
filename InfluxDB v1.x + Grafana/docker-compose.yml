@@ -1,0 +1,41 @@
+version: "2.0"
+
+services:
+  influxdb:
+    image: influxdb:${INF_TAG}
+    container_name: influxdb
+    restart: always
+    ports:
+      - 8086:8086
+    networks:
+      - monitoring
+    volumes:
+      - influxdb-volume:/var/lib/influxdb
+    environment:
+      - INFLUXDB_ADMIN_ENABLED=true
+      - INFLUXDB_ADMIN_USER=${INF_USERNAME}
+      - INFLUXDB_ADMIN_PASSWORD=${INF_PASSWORD}
+      - INFLUXDB_DB=${INF_DATABASE}
+  grafana:
+    image: grafana/grafana:${G_TAG}
+    container_name: grafana
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - monitoring
+    volumes:
+      - grafana-volume:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources/
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards/
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SECURITY_ADMIN_USER=${G_USERNAME}
+      - GF_SECURITY_ADMIN_PASSWORD=${G_PASSWORD}  
+networks:
+  monitoring:
+    driver: bridge
+volumes:
+  grafana-volume:
+  influxdb-volume:
